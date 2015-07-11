@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style type="text/css">
+      html, body, #map-canvas { height: 100%; margin: 0; padding: 0;}
+    </style>
+    <script type="text/javascript"
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3HLwmdkCSUM1IPtHzK_qBrm9ACp57Qqw">
+    </script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript">
+
+
+var map;
+var chicago = new google.maps.LatLng(41.86, -87.625);
+
+
+
+
+
+function initializeControl(controlDiv, map) {
+
+
+    // PAGE HEADER
+    var pageHeader = document.createElement('DIV');
+    pageHeader.style.backgroundColor = '#000000';
+    pageHeader.style.height = '50px';
+    pageHeader.style.width = '100%';
+
+    var headerContent = document.createElement('DIV');
+    headerContent.innerHTML = "d r o n a b l e";
+    headerContent.style.fontSize = '20px';
+    headerContent.style.fontFamily = 'Roboto,Arial,sans-serif';
+    headerContent.style.color = '#FFA500';
+    headerContent.style.padding = '15px';
+    pageHeader.appendChild(headerContent);
+
+    map.controls[google.maps.ControlPosition.TOP_CENTER].push(pageHeader);
+
+
+    // DRONE WIDGET
+   
+    // Create a div to hold the drone widget
+    var droneWidget = document.createElement('DIV');
+    droneWidget.id = "widget"; 
+    droneWidget.style.fontSize = '14px';
+    droneWidget.style.fontFamily = 'Roboto,Arial,sans-serif';
+    droneWidget.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+    droneWidget.style.backgroundColor = '#E6E6E6';
+    droneWidget.style.border = '1px solid #808080';
+    droneWidget.style.borderRadius = '3px';
+    droneWidget.style.marginTop = '60px';
+    droneWidget.style.marginLeft = '10px';
+    droneWidget.style.padding = '5px';
+    droneWidget.style.width = '350px';
+
+    // Widget heading
+    var widgetHeader = document.createElement('DIV');
+    widgetHeader.innerHTML = "Flight information";
+    widgetHeader.style.fontSize = '16px';
+    widgetHeader.style.fontFamily = 'Roboto,Arial,sans-serif';
+    widgetHeader.style.fontWeight = 'bold';
+    widgetHeader.style.color = '#000000';
+    widgetHeader.style.padding = '5px';
+
+
+    // Table to organize the inputs
+    var inputTable = document.createElement('TABLE');
+
+
+    // VEHICLE LOCATION
+
+    // Create an input field
+    var controlInput = document.createElement('input');
+    controlInput.size = "38";
+
+    // Create a label
+    var controlLabel = document.createElement('label');
+    controlLabel.innerHTML = "Drone location:";
+
+    // Add row to table
+    var locationRow = document.createElement('TR');
+    var cell1a = document.createElement("TD");
+    cell1a.appendChild(controlLabel);
+    var cell1b = document.createElement("TD");
+    cell1b.appendChild(controlInput);
+    locationRow.appendChild(cell1a);
+    locationRow.appendChild(cell1b);
+    inputTable.appendChild(locationRow);
+
+
+    // OPERATOR TYPE
+
+    var operatorTypeDDL = document.createElement('select');
+    operatorTypeDDL.id = "operator-type";
+    operatorTypeDDL.name = "operator-type";
+    operatorTypeDDL.style.fontSize = '14px';
+
+    operatorTypeDDL.appendChild(new Option("Hobbyist", "Hobbyist"));
+    operatorTypeDDL.appendChild(new Option("Commercial", "Commercial"));
+    operatorTypeDDL.appendChild(new Option("Government", "Government"));
+    operatorTypeDDL.appendChild(new Option("Law enforcement", "Law enforcement"));
+    operatorTypeDDL.appendChild(new Option("Military", "Military"));
+    operatorTypeDDL.appendChild(new Option("Researcher", "Researcher"));
+
+    var operatorTypeLabel = document.createElement('label');
+    operatorTypeLabel.innerHTML = "Operator type:";
+    operatorTypeLabel.setAttribute("for","operator-type");
+
+    var operatorTypeRow = document.createElement('TR');
+    var cell2a = document.createElement("TD");
+    cell2a.appendChild(operatorTypeLabel);
+    var cell2b = document.createElement("TD");
+    cell2b.appendChild(operatorTypeDDL);
+    operatorTypeRow.appendChild(cell2a);
+    operatorTypeRow.appendChild(cell2b);
+    inputTable.appendChild(operatorTypeRow);
+
+
+    // FLIGHT PURPOSE
+
+    var flightPurposeDDL = document.createElement('select');
+    flightPurposeDDL.id = "flight-purpose";
+    flightPurposeDDL.name = "flight-purpose";
+
+    flightPurposeDDL.appendChild(new Option("Recreation", "Recreation"));
+    flightPurposeDDL.appendChild(new Option("Surveillance/Observation", "Surveillance/Observation"));
+    flightPurposeDDL.appendChild(new Option("Agriculture", "Agriculture"));
+    flightPurposeDDL.appendChild(new Option("Scientific research", "Scientific research"));
+    flightPurposeDDL.appendChild(new Option("Firefighting", "Firefighting"));
+    flightPurposeDDL.appendChild(new Option("Mapping/surveying", "Mapping/surveying"));
+    flightPurposeDDL.appendChild(new Option("Environmental observation", "Environmental observation"));
+    flightPurposeDDL.appendChild(new Option("Journalism", "Journalism"));
+    flightPurposeDDL.appendChild(new Option("Traffic assessment", "Traffic assessment"));
+    flightPurposeDDL.appendChild(new Option("Package delivery", "Package delivery"));
+    flightPurposeDDL.appendChild(new Option("Industrial observation", "Industrial observation"));
+    flightPurposeDDL.appendChild(new Option("Utility maintenance", "Utility maintenance"));
+    flightPurposeDDL.appendChild(new Option("Real estate sales", "Real estate sales"));
+    flightPurposeDDL.appendChild(new Option("Artistic expression", "Artistic expression"));
+    flightPurposeDDL.appendChild(new Option("Use of weapons", "Use of weapons"));
+    flightPurposeDDL.appendChild(new Option("Signal interference", "Signal interference"));
+    flightPurposeDDL.appendChild(new Option("Hunting", "Hunting"));
+
+    var flightPurposeLabel = document.createElement('label');
+    flightPurposeLabel.innerHTML = "Flight purpose:";
+    flightPurposeLabel.setAttribute("for","flight-purpose");
+
+    var flightPurposeRow = document.createElement('TR');
+    var cell3a = document.createElement("TD");
+    cell3a.appendChild(flightPurposeLabel);
+    var cell3b = document.createElement("TD");
+    cell3b.appendChild(flightPurposeDDL);
+    flightPurposeRow.appendChild(cell3a);
+    flightPurposeRow.appendChild(cell3b);
+    inputTable.appendChild(flightPurposeRow);
+
+
+
+    // SENSING EQUIPMENT
+
+    // var sensingEquip = document.createElement('input');
+    // sensingEquip.type = "checkbox";
+
+
+
+    // ALTITUDE
+
+    var altitudeInput = document.createElement('input');
+    altitudeInput.size = "8";
+
+    var altitudeLabel = document.createElement('label');
+    altitudeLabel.innerHTML = "Altitude:";
+
+    var altitudeUnits = document.createElement('select');
+    altitudeUnits.appendChild(new Option("Feet", "Feet"));
+    altitudeUnits.appendChild(new Option("Meters", "Meters"));
+
+    var altitudeBaseline = document.createElement('select');
+    altitudeBaseline.appendChild(new Option("Above ground", "Above ground"));
+    altitudeBaseline.appendChild(new Option("Above sea level", "Above sea level"));
+
+    var altitudeRow = document.createElement('TR');
+    var cell4a = document.createElement("TD");
+    cell4a.appendChild(altitudeLabel);
+    var cell4b = document.createElement("TD");
+    cell4b.appendChild(altitudeInput);
+    cell4b.appendChild(altitudeUnits);
+    cell4b.appendChild(altitudeBaseline);
+    altitudeRow.appendChild(cell4a);
+    altitudeRow.appendChild(cell4b);
+    inputTable.appendChild(altitudeRow);
+
+    var altitudeUnits = document.createElement('select');
+    altitudeUnits.id = "altitude-units";
+    altitudeUnits.name = "altitude-units";
+    altitudeUnits.appendChild(new Option("Feet", "Feet"));
+    altitudeUnits.appendChild(new Option("Meters", "Meters"));
+
+
+
+    // VEHICLE RANGE
+
+    var vehicleRangeInput = document.createElement('input');
+    vehicleRangeInput.size = "8";
+
+    var vehicleRangeLabel = document.createElement('label');
+    vehicleRangeLabel.innerHTML = "Range:";
+
+    var vehicleRangeUnits = document.createElement('select');
+    vehicleRangeUnits.appendChild(new Option("Miles", "Miles"));
+    vehicleRangeUnits.appendChild(new Option("Kilometers", "Kilometers"));
+    vehicleRangeUnits.appendChild(new Option("Minutes", "Minutes"));
+
+    var vehicleRangeRow = document.createElement('TR');
+    var cell5a = document.createElement("TD");
+    cell5a.appendChild(vehicleRangeLabel);
+    var cell5b = document.createElement("TD");
+    cell5b.appendChild(vehicleRangeInput);
+    cell5b.appendChild(vehicleRangeUnits);
+    vehicleRangeRow.appendChild(cell5a);
+    vehicleRangeRow.appendChild(cell5b);
+    inputTable.appendChild(vehicleRangeRow);
+
+
+    // VEHICLE WEIGHT
+
+    var vehicleWeightInput = document.createElement('input');
+    vehicleWeightInput.size = "8";
+
+    var vehicleWeightLabel = document.createElement('label');
+    vehicleWeightLabel.innerHTML = "Weight:";
+
+    var vehicleWeightUnits = document.createElement('select');
+    vehicleWeightUnits.appendChild(new Option("Pounds", "Pounds"));
+    vehicleWeightUnits.appendChild(new Option("Kilograms", "Kilograms"));
+
+    var vehicleWeightRow = document.createElement('TR');
+    var cell6a = document.createElement("TD");
+    cell6a.appendChild(vehicleWeightLabel);
+    var cell6b = document.createElement("TD");
+    cell6b.appendChild(vehicleWeightInput);
+    cell6b.appendChild(vehicleWeightUnits);
+    vehicleWeightRow.appendChild(cell6a);
+    vehicleWeightRow.appendChild(cell6b);
+    inputTable.appendChild(vehicleWeightRow);
+
+
+    // SUBMIT BUTTON
+
+    // Set CSS for the control border
+    var controlButton = document.createElement('div');
+    controlButton.style.backgroundColor = '#fff';
+    controlButton.style.border = '2px solid #fff';
+    controlButton.style.borderRadius = '3px';
+    controlButton.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+    controlButton.style.cursor = 'pointer';
+    controlButton.style.float = 'center';
+    controlButton.style.marginBottom = '5px';
+    controlButton.style.marginTop = '5px';
+    controlButton.style.marginRight = '50px';
+    controlButton.style.marginLeft = '50px';
+    controlButton.style.textAlign = 'center';
+    controlButton.title = 'Click here for a flight risk assessment';
+
+    // Set CSS for the control interior
+    var goCenterText = document.createElement('div');
+    controlButton.style.color = 'rgb(25,25,25)';
+    controlButton.style.fontFamily = 'Roboto,Arial,sans-serif';
+    controlButton.style.fontSize = '14px';
+    controlButton.style.lineHeight = '30px';
+    controlButton.style.paddingLeft = '25px';
+    controlButton.style.paddingRight = '25px';
+    controlButton.innerHTML = 'Analyze';
+    controlButton.appendChild(goCenterText);
+
+
+    // ADD CONTROLS TO WIDGET
+    
+    droneWidget.appendChild(widgetHeader);
+    droneWidget.appendChild(inputTable);
+    droneWidget.appendChild(controlButton);
+    map.controls[google.maps.ControlPosition.LEFT_TOP].push(droneWidget);
+
+
+
+    
+
+
+
+
+
+    // SEND DATA TO SERVER
+    google.maps.event.addDomListener(controlButton, 'click', function() {
+       // alert("yippee" + controlInput.value);
+
+
+       $.getJSON( "https://www.wolframcloud.com/objects/user-606699a3-52fc-4528-a492-43b4309e137a/drone_API?" + 
+         "VehicleAddress=" + controlInput.value + 
+         "&OperatorType=" + operatorTypeDDL.value +
+         "&FlightPurpose=" + flightPurposeDDL.value +
+         "&Altitude=" + altitudeInput.value +
+         "&AltitudeUnits=" + altitudeUnits.value +
+         "&AltitudeBaseline=" + altitudeBaseline.value +
+         "&VehicleRange=" + vehicleRangeInput.value +
+         "&VehicleRangeUnits=" + vehicleRangeUnits.value +
+         "&VehicleWeight=" + vehicleWeightInput.value +
+         "&VehicleWeightUnits=" + vehicleWeightUnits.value,
+
+         function( data ) {
+
+           // CENTER THE MAP ON THE DRONE’S LOCATION
+           map.setCenter(new google.maps.LatLng(data.vehicleLocation.lat, data.vehicleLocation.long));
+
+
+           // DIV TO HOLD THE RESULT WIDGET
+           var resultWidget = document.createElement('DIV');
+           resultWidget.style.fontSize = '14px';
+           resultWidget.style.fontFamily = 'Roboto,Arial,sans-serif';
+           resultWidget.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+           resultWidget.style.backgroundColor = '#E6E6E6';
+           resultWidget.style.border = '1px solid #808080';
+           resultWidget.style.borderRadius = '3px';
+           resultWidget.style.marginTop = '10px';
+           resultWidget.style.marginLeft = '10px';
+           resultWidget.style.padding = '5px';
+           resultWidget.style.width = '350px';
+
+
+           // DISPLAY THE RISK ASSESSMENT
+           var widgetResults = document.createElement('DIV');
+           widgetResults.innerHTML = "Risk assessment";
+           widgetResults.style.fontSize = '16px';
+           widgetResults.style.fontFamily = 'Roboto,Arial,sans-serif';
+           widgetResults.style.fontWeight = 'bold';
+           widgetResults.style.color = '#000000';
+           widgetResults.style.padding = '5px';
+           resultWidget.appendChild(widgetResults);
+
+
+           // DISPLAY COLOR CODE 
+           var svg1 = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+           svg1.setAttribute("height","115px");
+           svg1.setAttribute("width","135px");
+           var circles = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+           circles.setAttribute("cx",80);
+           circles.setAttribute("cy",60);
+           circles.setAttribute("r","50");
+           circles.setAttribute("fill", data.assessment.colorCode);
+           circles.setAttribute("stroke","black");
+           circles.setAttribute("stroke-width","2px");
+           svg1.appendChild(circles);
+
+
+           // TEXT THAT DESCRIBES COLOR CODE
+           var colorCodeText = document.createElement('label');
+           colorCodeText.innerHTML = data.assessment.text;
+           colorCodeText.style.fontSize = '20px';
+           colorCodeText.style.fontFamily = 'Roboto,Arial,sans-serif';
+           colorCodeText.style.color = '#000000';
+
+           // COLOR CODE TABLE
+           var colorCodeContainer = document.createElement('table');
+           var colorCodeRow = document.createElement('TR');
+           var colorCodeCell1 = document.createElement("TD");
+           colorCodeCell1.appendChild(svg1);
+           var colorCodeCell2 = document.createElement("TD");
+           colorCodeCell2.appendChild(colorCodeText);
+           colorCodeRow.appendChild(colorCodeCell1);
+           colorCodeRow.appendChild(colorCodeCell2);
+           colorCodeContainer.appendChild(colorCodeRow);
+           resultWidget.appendChild(colorCodeContainer);
+
+
+           // DISPLAY REASON LIST
+
+           var reasonList = document.createElement("ul");
+           var reasons = data.assessment.reasons;
+
+           for(var i=0;i<reasons.length;i++){
+             var reasonListItem = document.createElement("li");
+             reasonListItem.innerHTML = reasons[i];
+             reasonList.appendChild(reasonListItem);
+           }
+           resultWidget.appendChild(reasonList);
+
+
+           // PUSH THE RESULT WIDGET
+
+           // Replace the existing result widget with the new one
+           if (map.controls[google.maps.ControlPosition.LEFT_TOP].getLength() > 1) 
+           {
+             map.controls[google.maps.ControlPosition.LEFT_TOP].removeAt(1);
+           }
+           map.controls[google.maps.ControlPosition.LEFT_TOP].push(resultWidget);
+
+
+           // ADD CIRCULAR NO-FLY ZONES TO THE MAP
+
+           var circ = data.noFlyZones.circles;
+
+           for(var i=0;i<circ.length;i++){
+             var cir = circ[i];
+
+
+            var newCircle = new google.maps.Circle({
+             strokeColor: '#FF0000',
+             strokeOpacity: 0.8,
+             strokeWeight: 2,
+             fillColor: '#FF0000',
+             fillOpacity: 0.35,
+             map: map,
+             center: new google.maps.LatLng(cir.lat, cir.long),
+             radius: cir.radiusInMeters
+            });
+
+            // Add the circle for this city to the map.
+// google.maps.event.trigger(map, 'resize');
+          //  newCircle.setMap(null); // not working!
+            newCircle.setMap(map);
+           }
+
+
+
+           // ADD POLYGONAL NO-FLY ZONES TO THE MAP
+
+           var polys = data.noFlyZones.polygons;
+
+           for(var i=0;i<polys.length;i++){
+             var poly = polys[i];
+             var polyCoords = [];
+
+             // Define the LatLng coordinates for the polygon's path.
+             for (var j = 0; j < poly.length; j++) {
+               transformed = new google.maps.LatLng(poly[j].lat, poly[j].long);
+               polyCoords.push(transformed);
+             }
+
+             // Construct the polygon.
+             newPoly = new google.maps.Polygon({
+               paths: polyCoords,
+               strokeColor: '#FF0000',
+               strokeOpacity: 0.8,
+               strokeWeight: 2,
+               fillColor: '#FF0000',
+               fillOpacity: 0.35
+             });
+
+             newPoly.setMap(map);
+           }
+
+
+         });
+       });
+
+}
+
+
+
+
+
+function initialize() {
+  var mapDiv = document.getElementById('map-canvas');
+  var mapOptions = {
+    zoom: 15,
+    center: chicago,
+    disableDefaultUI: true,
+    mapTypeControl: true,
+    mapTypeId: google.maps.MapTypeId.SATELLITE
+  };
+
+  map = new google.maps.Map(mapDiv, mapOptions);
+
+
+
+  // Create the DIV to hold the control and
+  var centerControlDiv = document.createElement('div');
+  var centerControl = new initializeControl(centerControlDiv, map);
+
+
+ // LET USER'S LOCATION BE THE DEFAULT LOCATION
+
+
+
+
+
+
+
+}
+
+google.maps.event.addDomListener(window, 'load', initialize);
+
+
+
+
+    </script>
+  </head>
+  <body>
+<div id="map-canvas"></div>
+  </body>
+</html>
