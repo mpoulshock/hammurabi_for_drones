@@ -8,6 +8,7 @@
       src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC3HLwmdkCSUM1IPtHzK_qBrm9ACp57Qqw">
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="http://api.wxtiles.com/wxtiles.v2.min.js" type="text/javascript" ></script> <!-- weather overlay -->
     <script type="text/javascript">
 
 
@@ -294,7 +295,7 @@ function initializeControl(controlDiv, map) {
        // alert("yippee" + controlInput.value);
 
 
-       $.getJSON( "https://www.wolframcloud.com/objects/user-606699a3-52fc-4528-a492-43b4309e137a/drone_API?" + 
+       $.getJSON( "https://www.wolframcloud.com/objects/user-606699a3-52fc-4528-a492-43b4309e137a/drone_API_test?" + 
          "VehicleAddress=" + controlInput.value + 
          "&OperatorType=" + operatorTypeDDL.value +
          "&FlightPurpose=" + flightPurposeDDL.value +
@@ -401,12 +402,15 @@ function initializeControl(controlDiv, map) {
            for(var i=0;i<circ.length;i++){
              var cir = circ[i];
 
+             // Control circle color
+             var circleColor = '#FF0000';
+	     if (cir.label == "HELIPORT") {circleColor = '#F88017';}
 
             var newCircle = new google.maps.Circle({
-             strokeColor: '#FF0000',
+             strokeColor: circleColor,
              strokeOpacity: 0.8,
              strokeWeight: 2,
-             fillColor: '#FF0000',
+             fillColor: circleColor,
              fillOpacity: 0.35,
              map: map,
              center: new google.maps.LatLng(cir.lat, cir.long),
@@ -426,7 +430,7 @@ function initializeControl(controlDiv, map) {
            var polys = data.noFlyZones.polygons;
 
            for(var i=0;i<polys.length;i++){
-             var poly = polys[i];
+             var poly = polys[i].region;
              var polyCoords = [];
 
              // Define the LatLng coordinates for the polygon's path.
@@ -447,6 +451,21 @@ function initializeControl(controlDiv, map) {
 
              newPoly.setMap(map);
            }
+
+
+	// DROP A PIN AT DRONE'S LOCATION
+
+	  var marker = new google.maps.Marker({
+            position: {lat: data.vehicleLocation.lat, lng: data.vehicleLocation.long},
+            map: map
+  	  });
+
+
+	// ADD WEATHER OVERLAY FROM www.wxtiles.com
+	var wxoverlay=new WXTiles();
+	wxoverlay.cview = 'satenh'; // sets default overlay to 'Satellite IR enhanced'
+        wxoverlay.addToMap(map);
+
 
 
          });
@@ -496,5 +515,6 @@ google.maps.event.addDomListener(window, 'load', initialize);
   </head>
   <body>
 <div id="map-canvas"></div>
+
   </body>
 </html>
