@@ -12,10 +12,62 @@
     <script type="text/javascript">
 
 
+
+// GLOBAL VARIABLES
 var map;
 var chicago = new google.maps.LatLng(41.86, -87.625);
+var weatherOn = false;
+var wxoverlay;
 
 
+// WEATHER OVERLAY TOGGLE SWITCH
+function CenterControl(controlDiv, map) {
+
+  // Set CSS for the control border.
+  var controlUI = document.createElement('div');
+  controlUI.style.backgroundColor = '#fff';
+  controlUI.style.border = '2px solid #fff';
+  controlUI.style.borderRadius = '3px';
+  controlUI.style.boxShadow = '0 2px 6px rgba(0,0,0,.3)';
+  controlUI.style.cursor = 'pointer';
+  controlUI.style.marginTop = '10px';
+  controlUI.style.marginRight = '10px';
+  controlUI.style.marginBottom = '22px';
+  controlUI.style.textAlign = 'center';
+  controlDiv.appendChild(controlUI);
+
+  // Set CSS for the control interior.
+  var controlText = document.createElement('div');
+  controlText.style.color = 'rgb(25,25,25)';
+  controlText.style.fontFamily = 'Roboto,Arial,sans-serif';
+  controlText.style.fontSize = '11px';
+  controlText.style.lineHeight = '30px';
+  controlText.style.paddingLeft = '5px';
+  controlText.style.paddingRight = '5px';
+  controlText.innerHTML = 'Show weather';
+  controlUI.appendChild(controlText);
+
+  // Toggle the weather layer on/off
+  controlUI.addEventListener('click', function() {
+
+
+    if (weatherOn) {
+        weatherOn = false;
+        controlText.innerHTML = 'Show weather';
+        wxoverlay.removeFromMap(map);
+    }
+    if (!weatherOn) {
+        // ADD WEATHER OVERLAY FROM www.wxtiles.com
+	wxoverlay=new WXTiles();
+	wxoverlay.cview = 'satenh'; // sets default overlay to 'Satellite IR enhanced'
+        wxoverlay.addToMap(map);
+        weatherOn = true;
+        controlText.innerHTML = 'Hide weather';
+    }
+       
+  });
+
+}
 
 
 
@@ -36,7 +88,7 @@ function initializeControl(controlDiv, map) {
     headerContent.style.padding = '15px';
     pageHeader.appendChild(headerContent);
 
-    map.controls[google.maps.ControlPosition.TOP_CENTER].push(pageHeader);
+    // map.controls[google.maps.ControlPosition.TOP_CENTER].push(pageHeader);
 
 
     // DRONE WIDGET
@@ -50,7 +102,7 @@ function initializeControl(controlDiv, map) {
     droneWidget.style.backgroundColor = '#E6E6E6';
     droneWidget.style.border = '1px solid #808080';
     droneWidget.style.borderRadius = '3px';
-    droneWidget.style.marginTop = '60px';
+    // droneWidget.style.marginTop = '60px';
     droneWidget.style.marginLeft = '10px';
     droneWidget.style.padding = '5px';
     droneWidget.style.width = '350px';
@@ -275,16 +327,33 @@ function initializeControl(controlDiv, map) {
     controlButton.appendChild(goCenterText);
 
 
+    // CHECKBOX FOR WEATHER OVERLAY
+
+    // Create an input field
+    // var weatherQ = document.createElement('input');
+    // weatherQ.setAttribute("type", "checkbox");
+    // weatherQ.onclick="Urgente()";
+
+    // Create a label
+    // var weatherLabel = document.createElement('label');
+    // weatherLabel.innerHTML = " Show weather radar";
+
+
+
     // ADD CONTROLS TO WIDGET
     
     droneWidget.appendChild(widgetHeader);
     droneWidget.appendChild(inputTable);
     droneWidget.appendChild(controlButton);
+
+    //droneWidget.appendChild(weatherQ);
+    //droneWidget.appendChild(weatherLabel);
+
     map.controls[google.maps.ControlPosition.LEFT_TOP].push(droneWidget);
 
 
 
-    
+
 
 
 
@@ -295,7 +364,9 @@ function initializeControl(controlDiv, map) {
        // alert("yippee" + controlInput.value);
 
 
-       $.getJSON( "https://www.wolframcloud.com/objects/user-606699a3-52fc-4528-a492-43b4309e137a/drone_API_test?" + 
+
+
+       $.getJSON( "https://www.wolframcloud.com/objects/user-606699a3-52fc-4528-a492-43b4309e137a/drone_API?" + 
          "VehicleAddress=" + controlInput.value + 
          "&OperatorType=" + operatorTypeDDL.value +
          "&FlightPurpose=" + flightPurposeDDL.value +
@@ -461,11 +532,6 @@ function initializeControl(controlDiv, map) {
   	  });
 
 
-	// ADD WEATHER OVERLAY FROM www.wxtiles.com
-	var wxoverlay=new WXTiles();
-	wxoverlay.cview = 'satenh'; // sets default overlay to 'Satellite IR enhanced'
-        wxoverlay.addToMap(map);
-
 
 
          });
@@ -482,7 +548,7 @@ function initialize() {
   var mapOptions = {
     zoom: 15,
     center: chicago,
-    disableDefaultUI: true,
+    // disableDefaultUI: true,
     mapTypeControl: true,
     mapTypeId: google.maps.MapTypeId.SATELLITE
   };
@@ -491,15 +557,24 @@ function initialize() {
 
 
 
-  // Create the DIV to hold the control and
+  // MAIN FLIGHT INFO CONTROL
   var centerControlDiv = document.createElement('div');
   var centerControl = new initializeControl(centerControlDiv, map);
+
+
+  // SHOW WEATHER RADAR BUTTON
+  var centerControlDiv2 = document.createElement('div');
+  var centerControl2 = new CenterControl(centerControlDiv2, map);
+  centerControlDiv2.index = 1;
+  map.controls[google.maps.ControlPosition.TOP_RIGHT].push(centerControlDiv2);
+
+
 
 
  // LET USER'S LOCATION BE THE DEFAULT LOCATION
 
 
-
+	
 
 
 
